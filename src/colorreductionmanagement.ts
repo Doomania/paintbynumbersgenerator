@@ -61,6 +61,14 @@ export class ColorReducer {
      *  k clusters and then output the result to the given outputImgData
      */
     public static async applyKMeansClustering(imgData: ImageData, outputImgData: ImageData, ctx: CanvasRenderingContext2D, settings: Settings, onUpdate: ((kmeans: KMeans) => void) | null = null) {
+
+        // PATCH: a colour restriction list is a hardware constraint (the markers the
+        // user physically owns). Perceptual matching only works in LAB, so force it.
+        // This also keeps updateKmeansOutputImageData's conversion in step.
+        if (settings.kMeansColorRestrictions.length > 0) {
+            settings.kMeansClusteringColorSpace = ClusteringColorSpace.LAB;
+        }
+
         const vectors: Vector[] = [];
         let idx = 0;
         let vIdx = 0;
@@ -115,8 +123,33 @@ export class ColorReducer {
         }
 
         const random = new Random(settings.randomSeed === 0 ? new Date().getTime() : settings.randomSeed);
+
+        // PATCH: build the allowed palette in LAB and hand it to KMeans so the
+        // constraint is enforced during clustering rather than snapped afterwards.
+        // Without this, several centroids collapse onto the same marker and you
+        // silently get far fewer colours than you asked for.
+        let paletteLab: number[][] | null = null;
+        if (settings.kMeansColorRestrictions.length > 0) {
+            const seen: { [key: string]: boolean } = {};
+            paletteLab = [];
+            for (const c of settings.kMeansColorRestrictions) {
+                const rgb: RGB = (typeof c === "string") ? settings.colorAliases[c] : c;
+                if (typeof rgb === "undefined") {
+                    throw new Error(`Color restriction "${c}" has no matching entry in colorAliases`);
+                }
+                const key = rgb.join(",");
+                if (seen[key]) { continue; }   // de-dupe identical swatches
+                seen[key] = true;
+                paletteLab.push(rgb2lab(rgb));
+            }
+            if (settings.kMeansNrOfClusters > paletteLab.length) {
+                console.warn(`kMeansNrOfClusters (${settings.kMeansNrOfClusters}) exceeds the ` +
+                    `${paletteLab.length} distinct restricted colors available; clamping to ${paletteLab.length}.`);
+            }
+        }
+
         // vectors of all the unique colors are built, time to cluster them
-        const kmeans = new KMeans(vectors, settings.kMeansNrOfClusters, random);
+        const kmeans = new KMeans(vectors, settings.kMeansNrOfClusters, random, null, paletteLab);
 
         let curTime = new Date().getTime();
 
