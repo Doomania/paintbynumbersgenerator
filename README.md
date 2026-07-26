@@ -1,118 +1,167 @@
-# Paint by numbers generator
-Generate paint by number images (vectorized with SVG) from any input image.
+# Paint by numbers generator — marker edition
 
-*** This project was a proof of concept for fun back in the day, it is not being actively maintained but feel free to fork and make your own changes.  ***
+Fork of **[drake7707/paintbynumbersgenerator](https://github.com/drake7707/paintbynumbersgenerator)** (MIT).
+All upstream credit to drake7707. `LICENSE` is unchanged and applies to this fork.
 
-## Demo
+Upstream turns a photo into a paint-by-numbers SVG. This fork makes the output
+**paintable with alcohol and acrylic markers you already own** — the palette is
+constrained to a real marker set, and the legend maps each number to a marker code
+instead of a mixed paint pot.
 
-Try it out [here](https://drake7707.github.io/paintbynumbersgenerator/index.html)
+---
 
-### CLI Version
+## What's different
 
-The CLI version is a self contained node application that does the conversion from arguments, for example:
-```
-paint-by-numbers-generator-win.exe -i input.png -o output.svg
-```
-You can change the settings in settings.json or optionally specify a specific settings.json with the `-c path_to_settings.json` argument.
+Four source edits, ~90 lines. Everything else is upstream, untouched.
 
-The settings contain mostly the same settings in the web version:
- - randomSeed: the random seed to choose the initial starting points of the k-means clustering algorithm. This ensures that the same results are generated each time.
- - kMeansNrOfClusters: the number of colors to quantize the image to
- - kMeansMinDeltaDifference: the threshold delta distance of the k-means clustering to reach before stopping. Having a bigger value will speed up the clustering but may yield suboptimal clusters. Default 1
- - kMeansClusteringColorSpace: the color space to apply clustering in
- - kMeansColorRestrictions: Specify which colors should be used. An array of rgb values (as number array) or names of colors (reference to color aliases). If no colors are specified no restrictions are applied. Useful if you only have a few colors of paint on hand.
- - colorAliases: map of key/values where the keys are the color names and the values are the rgb colors (as number array). You can use the color names in the color restrictions above. The names are also mentioned in the output json that tells you how much % of the area is of that specific color.
-       ```
-       "colorAliases": {
-              "A1": [            0,            0,            0        ],
-              "A2": [            255,            0,            0        ],
-              "A3": [            0,            255,            0        ],
-          }
-        ```
- - removeFacetsSmallerThanNrOfPoints: removes any facets that are smaller than the given amount of pixels. Lowering the value will create more detailed results but might be much harder to actually paint due to their size.
- - removeFacetsFromLargeToSmall (true/false): largest to smallest will prevent boundaries from warping the shapes because the smaller facets act as border anchorpoints but can be considerably slower
- - maximumNumberOfFacets: if there are more facets than the given maximum number, keep removing the smallest facets until the limit is reached
- 
- - nrOfTimesToHalveBorderSegments: reducing the amount of points in a border segment (using haar wavelet reduction) will smooth out the quadratic curve more but at a loss of detail. A segment (shared border with a facet) will always retain its start and end point.
- 
- - narrowPixelStripCleanupRuns: narrow pixel cleanup removes strips of single pixel rows, which would make some facets have some borders segments that are way too narrow to be useful. The small facet removal can introduce new narrow pixel strips, so this is repeated in a few iterative runs.
- 
- - resizeImageIfTooLarge (true/false): if true and the input image is larger than the given dimensions then it will be resized to fit but will maintain its ratio.
- - resizeImageWidth: width restriction
- - resizeImageHeight: height restriction
+### 1. Constrained-palette clustering (the actual fix)
 
-There are also output profiles that you can define to output the result to svg, png, jpg with specific settings, for example:
-```
-  "outputProfiles": [
-        {
-            "name": "full",
-            "svgShowLabels": true,
-            "svgFillFacets": true,
-            "svgShowBorders": true,
-            "svgSizeMultiplier": 3,
-            "svgFontSize": 50,
-            "svgFontColor": "#333",
-            "filetype": "png"
-        },
-        {
-            "name": "bordersLabels",
-            "svgShowLabels": true,
-            "svgFillFacets": false,
-            "svgShowBorders": true,
-            "svgSizeMultiplier": 3,
-            "svgFontSize": 50,
-            "svgFontColor": "#333",
-            "filetype": "svg"
-        },
-        {
-            "name": "jpgtest",
-            "svgShowLabels": false,
-            "svgFillFacets": true,
-            "svgShowBorders": false,
-            "svgSizeMultiplier": 3,
-            "svgFontSize": 50,
-            "svgFontColor": "#333",
-            "filetype": "jpg",
-            "filetypeQuality": 80
-        }
-    ]
-```
-This defines 3 output profiles. The "full" profile shows labels, fills the facets and shows the borders with a 3x size multiplier, font size weight of 50, color of #333 and output to a png image. The bordersLabels profile outputs to a svg file without filling facets and jpgtest outputs to a jpg file with jpg quality setting  of 80.
+Upstream already supports `kMeansColorRestrictions` — but it applies the restriction
+**after** k-means has converged, in `updateKmeansOutputImageData`. Each centroid snaps
+to its nearest allowed colour independently, so centroids that drifted close together
+collapse onto the same marker. You ask for 24 colours and silently get 12.
 
-The CLI version also outputs a json file that gives more information about the palette, which colors are used and in what quantity, e.g.:
-```
-  ...
-  {
-    "areaPercentage": 0.20327615489130435,
-    "color": [ 59, 36, 27 ],
-    "frequency": 119689,
-    "index": 0
-  },
-   ...
+This fork enforces the constraint **during** clustering:
+
+- centroids are seeded from the k palette entries that actually cover the most image area
+- point→cluster assignment uses **CIEDE2000**, not Euclidean LAB (ΔE76)
+- after every averaging pass the centroid is projected onto the nearest **unclaimed**
+  palette entry, so k distinct markers survive
+- empty clusters are reseeded (capped at 15 iterations, always terminates)
+- `k` is clamped to the palette size instead of silently duplicating
+
+Measured on the same image, same seed, same LAB colour space:
+
+| set | requested k | upstream | this fork |
+|---|---|---|---|
+| `posca-8` | 8 | **4** / 8 | **8** / 8 |
+| `posca-16` | 16 | **7** / 16 | **13** / 16 |
+| `posca-full-43` | 24 | **12** / 24 | **24** / 24 |
+
+Cost: ~85ms → ~110ms on colour reduction at 400×400. The facet pipeline dominates
+total runtime, so this is not noticeable.
+
+`posca-16` reaching 13 rather than 16 is correct, not a shortfall — the three unused
+markers are `PC-Y`, `PC-YL` and `PC-DG`, and the test image contains no yellow or dark
+green. Forcing 16 would mean painting colours the photo does not have.
+
+The most visible single improvement: on the test image the red circle renders as
+**PC-R red** here and as **PC-BR brown** upstream. ΔE76 simply picked the wrong marker.
+
+### 2. `src/lib/colordistance.ts` *(new)*
+
+CIEDE2000 perceptual colour difference, verified against the Sharma / Wu / Dalal (2005)
+reference dataset — matches to four decimal places. Plus
+`nearestPaletteIndex(lab, palette, excluded)`.
+
+ΔE76 over-weights blue separation and under-weights near-neutral warm tones, which is
+exactly where skin lives. That is why faces get the wrong marker upstream.
+
+### 3. Marker palettes — `palettes/`
+
+`posca-43.json` — all 43 POSCA colours, with `posca-8`, `posca-16` and `posca-full-43`
+subsets ready to use as `kMeansColorRestrictions`.
+
+> Hex values are community-sourced **approximations of the physical ink**, not official
+> manufacturer data. Swatch your own pens on your actual paper stock before relying on
+> them. POSCA is a trademark of Mitsubishi Pencil Co., referenced descriptively only.
+
+### 4. `tools/generate.js` — pipeline runner without the native dep
+
+Replicates `src-cli/main.ts` but drops `canvas@2.5.0`, which does not build on modern
+Node. Input is raw RGBA bytes; decode upstream with `sharp`, `jimp`, or the browser's
+own canvas if you run this client-side.
+
+### 5. Two upstream compile fixes
+
+Not features — these block a build on any current toolchain:
+
+- `src/common.ts` — `new Promise<void>` under `strict` (fails on TypeScript ≥ 4)
+- `src/facetmanagement.ts` — import casing `./FacetBorderSegmenter` → `./facetBorderSegmenter`
+  (works on Windows/macOS, breaks on any case-sensitive filesystem, including most CI)
+
+---
+
+## Build
+
+```bash
+npm install -D typescript@5.4
+npx tsc -p tsconfig.test.json     # -> build-test/ (CommonJS, node-runnable)
 ```
 
-The CLI version is useful if you want to automate the process into your own scripts.
+`tsconfig.test.json` excludes `gui.ts`, `guiprocessmanager.ts`, `main.ts` and
+`lib/clipboard.ts` — the browser-only files. The algorithm modules import nothing but
+each other, so they lift cleanly into any front end.
 
-## Screenshots
+The original browser build is unchanged: use `src/tsconfig.json` (AMD → `scripts/main.js`).
 
-![Screenshot](https://i.imgur.com/6uHm78x.png])
+## Run
 
-![Screenshot](https://i.imgur.com/cY9ieAy.png)
+```bash
+node tools/generate.js \
+  --in photo.rgba --w 400 --h 400 \
+  --palette palettes/posca-43.json --set posca-16 --k 16 \
+  --minFacet 150 --maxFacets 60 --scale 3 \
+  --out out/portrait
+```
 
+Outputs:
 
-## Example output
+| file | what it is |
+|---|---|
+| `<out>-template.svg` | numbered outline, white fill — the file you print |
+| `<out>-preview.svg` | filled with marker colours — what it should look like |
+| `<out>-legend.json` | number → marker code, hex, % of area, region count, plus `markersNotNeeded` |
 
-![ExampleOutput](https://i.imgur.com/2Zuo13d.png)
+## Using a palette in the stock web UI
 
-![ExampleOutput2](https://i.imgur.com/SxWhOc7.png)
+The upstream GUI already accepts colour restrictions. Set
+`kMeansClusteringColorSpace` to `2` (LAB) — the default is `0` (RGB), which is the
+single biggest quality regression in the stock config.
 
-## Running locally
+```json
+{
+  "kMeansNrOfClusters": 24,
+  "kMeansClusteringColorSpace": 2,
+  "kMeansColorRestrictions": ["PC-R", "PC-B", "PC-Y"],
+  "colorAliases": { "PC-R": [232,32,32], "PC-B": [32,96,200], "PC-Y": [248,224,16] }
+}
+```
 
-I used VSCode, which has built in typescript support. To debug it uses a tiny webserver to host the files on localhost. 
+---
 
-To run do `npm install` to restore packages and then `npm start` to start the webserver
+## Known limitation
 
+Smooth gradients quantised into a constrained palette produce **ragged, finger-like band
+edges** — clearly visible in the sky of the test output.
 
-## Compiling the cli version
+Raising `removeFacetsSmallerThanNrOfPoints` does **not** fix it (tested at 40 / 150 / 400).
+Those fingers belong to one large connected facet, so facet-size pruning never sees them.
+Upstream has the same artefact; this fork just uses more colours, so there are more of them.
 
-Install pkg first if you don't have it yet `npm install pkg -g`. Then in the root folder run `pkg .`. This will generate the output for linux, windows and macos.
+The fix belongs upstream of quantization, not downstream:
+
+- bilateral or mean-shift pre-smoothing before `applyKMeansClustering`, or
+- a morphological open on `colormapResult.imgColorIndices` before `FacetCreator.getFacets`
+
+Neither is implemented yet. It is the next thing to build.
+
+---
+
+## Roadmap
+
+- [ ] pre-smoothing / morphological open to kill gradient band fingers
+- [ ] bleed gutter between facets (alcohol markers bleed past the line)
+- [ ] minimum facet size in **millimetres** derived from nib width + print size, not pixels
+- [ ] A5–A2 print-ready PDF output at 300dpi
+- [ ] more palettes: Ohuhu Acrylic, Molotow, Arrtx Acrylic, Copic
+- [ ] browser Web Worker build (zero server compute)
+
+## Upstream documentation
+
+Every upstream setting still works exactly as documented in the
+[original README](https://github.com/drake7707/paintbynumbersgenerator#readme).
+
+## Licence
+
+MIT, inherited from drake7707/paintbynumbersgenerator. See `LICENSE`.
