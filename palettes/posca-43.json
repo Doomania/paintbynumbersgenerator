@@ -1,0 +1,30 @@
+{
+  "_brand": "POSCA (Uni Mitsubishi) — water-based acrylic paint markers",
+  "_note": "Hex values are community-sourced approximations of the physical ink, NOT official manufacturer data. Swatch your own pens on your actual paper stock and replace these before selling anything. POSCA is a trademark of Mitsubishi Pencil Co.; this file references it descriptively only.",
+  "_count": 43,
+  "colorAliases": {
+    "PC-W":   [255, 255, 255], "PC-K":   [20, 20, 20],    "PC-8K":  [200, 200, 204],
+    "PC-8KG": [212, 168, 48],  "PC-Y":   [248, 224, 16],  "PC-YL":  [254, 248, 152],
+    "PC-R":   [232, 32, 32],   "PC-4":   [240, 64, 32],   "PC-P":   [240, 104, 152],
+    "PC-LP":  [248, 208, 224], "PC-MR":  [208, 64, 96],   "PC-CR":  [184, 32, 56],
+    "PC-O":   [248, 112, 32],
+    "PC-C":   [192, 224, 32],  "PC-OL":  [120, 136, 56],
+    "PC-G":   [32, 160, 56],   "PC-DG":  [16, 120, 32],   "PC-LG":  [160, 224, 160],
+    "PC-AG":  [136, 200, 64],  "PC-EM":  [24, 160, 88],
+    "PC-BG":  [16, 168, 160],  "PC-TQ":  [16, 192, 200],
+    "PC-LB":  [136, 200, 240], "PC-B":   [32, 96, 200],   "PC-DB":  [16, 40, 128],
+    "PC-MB":  [80, 112, 200],
+    "PC-V":   [120, 56, 192],  "PC-MV":  [112, 80, 192],  "PC-LV":  [192, 160, 224],
+    "PC-BR":  [144, 96, 48],   "PC-IB":  [248, 237, 208], "PC-BG2": [216, 184, 136],
+    "PC-RB":  [136, 56, 32],   "PC-CB":  [92, 40, 32],
+    "PC-WA":  [192, 184, 176], "PC-CG":  [176, 184, 192],
+    "PC-FY":  [255, 255, 0],   "PC-FO":  [255, 128, 0],   "PC-FR":  [255, 32, 64],
+    "PC-FP":  [255, 64, 192],  "PC-FL":  [64, 255, 128],  "PC-FB":  [0, 200, 255],
+    "PC-MG":  [208, 24, 128]
+  },
+  "sets": {
+    "posca-full-43": ["PC-W","PC-K","PC-8K","PC-8KG","PC-Y","PC-YL","PC-R","PC-4","PC-P","PC-LP","PC-MR","PC-CR","PC-O","PC-C","PC-OL","PC-G","PC-DG","PC-LG","PC-AG","PC-EM","PC-BG","PC-TQ","PC-LB","PC-B","PC-DB","PC-MB","PC-V","PC-MV","PC-LV","PC-BR","PC-IB","PC-BG2","PC-RB","PC-CB","PC-WA","PC-CG","PC-FY","PC-FO","PC-FR","PC-FP","PC-FL","PC-FB","PC-MG"],
+    "posca-16": ["PC-W","PC-K","PC-Y","PC-YL","PC-R","PC-P","PC-O","PC-G","PC-DG","PC-LG","PC-LB","PC-B","PC-DB","PC-V","PC-BR","PC-BG2"],
+    "posca-8": ["PC-W","PC-K","PC-Y","PC-R","PC-O","PC-G","PC-B","PC-BR"]
+  }
+}
