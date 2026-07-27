@@ -30,6 +30,12 @@ All the raw algorithm parameters are still there under **Advanced settings**.
 
 The original Materialize UI is untouched at `index.html`.
 
+**Verified working end to end**, live from GitHub (via htmlpreview), in an actual
+browser: uploaded a 400×400 test portrait, generated against `posca-16`, and got
+10 colours / 19 regions with a correct marker legend — matching the Node/CLI result
+exactly. Template, preview, legend, the "you won't need" callout and the SVG
+download all fired with no console errors.
+
 ```bash
 npx tsc -p tsconfig.studio.json    # builds scripts/studio.js
 npm start                          # serve, then open /studio.html
