@@ -96,6 +96,15 @@ h1{font-size:26px;line-height:1.2;letter-spacing:-.022em;margin:0 0 6px;font-wei
 .preview .meta span{color:var(--text-3);font-size:12.5px;font-variant-numeric:tabular-nums}
 .preview .act{margin-left:auto;display:flex;gap:8px}
 
+/* ---- brand tabs ---- */
+.brandtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.brandtabs button{
+  padding:8px 14px;border:1.5px solid var(--line);border-radius:99px;background:var(--surface);
+  color:var(--text-2);font:inherit;font-size:13px;font-weight:580;cursor:pointer;transition:.14s
+}
+.brandtabs button:hover{color:var(--text);border-color:var(--text-3)}
+.brandtabs button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+
 /* ---- marker sets ---- */
 .sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:11px}
 .set{
@@ -219,7 +228,7 @@ footer a{color:var(--text-2)}
 <header>
   <div>
     <h1>Marker Studio</h1>
-    <p class="sub">Turn a photo into a paint-by-numbers template built <em>only</em> from marker colours you already own. Nothing uploads — everything runs in this browser.</p>
+    <p class="sub">Turn a photo into a paint-by-numbers template built <em>only</em> from the markers or colour pencils you already own. Nothing uploads — everything runs in this browser.</p>
   </div>
   <div class="hdr-controls">
     <div class="seg sm" id="themeseg" role="group" aria-label="Theme">
@@ -249,7 +258,8 @@ footer a{color:var(--text-2)}
 </section>
 
 <section class="step">
-  <div class="step-head"><span class="num">2</span><h2>Which markers do you own?</h2><span class="hint" id="setHint">Only these colours will be used</span></div>
+  <div class="step-head"><span class="num">2</span><h2>What are you colouring with?</h2><span class="hint" id="setHint">Only these colours will be used</span></div>
+  <div class="brandtabs" id="brandtabs" role="tablist" aria-label="Marker or pencil brand"></div>
   <div class="sets" id="sets"></div>
 </section>
 
@@ -321,7 +331,8 @@ footer a{color:var(--text-2)}
 
 </div>
 
-<script>window.__PALETTE_FALLBACK__={"_brand":"POSCA (Uni Mitsubishi) \u2014 water-based acrylic paint markers","_note":"Hex values are community-sourced approximations of the physical ink, NOT official manufacturer data. Swatch your own pens on your actual paper stock and replace these before selling anything. POSCA is a trademark of Mitsubishi Pencil Co.; this file references it descriptively only.","_count":43,"colorAliases":{"PC-W":[255,255,255],"PC-K":[20,20,20],"PC-8K":[200,200,204],"PC-8KG":[212,168,48],"PC-Y":[248,224,16],"PC-YL":[254,248,152],"PC-R":[232,32,32],"PC-4":[240,64,32],"PC-P":[240,104,152],"PC-LP":[248,208,224],"PC-MR":[208,64,96],"PC-CR":[184,32,56],"PC-O":[248,112,32],"PC-C":[192,224,32],"PC-OL":[120,136,56],"PC-G":[32,160,56],"PC-DG":[16,120,32],"PC-LG":[160,224,160],"PC-AG":[136,200,64],"PC-EM":[24,160,88],"PC-BG":[16,168,160],"PC-TQ":[16,192,200],"PC-LB":[136,200,240],"PC-B":[32,96,200],"PC-DB":[16,40,128],"PC-MB":[80,112,200],"PC-V":[120,56,192],"PC-MV":[112,80,192],"PC-LV":[192,160,224],"PC-BR":[144,96,48],"PC-IB":[248,237,208],"PC-BG2":[216,184,136],"PC-RB":[136,56,32],"PC-CB":[92,40,32],"PC-WA":[192,184,176],"PC-CG":[176,184,192],"PC-FY":[255,255,0],"PC-FO":[255,128,0],"PC-FR":[255,32,64],"PC-FP":[255,64,192],"PC-FL":[64,255,128],"PC-FB":[0,200,255],"PC-MG":[208,24,128]},"sets":{"posca-full-43":["PC-W","PC-K","PC-8K","PC-8KG","PC-Y","PC-YL","PC-R","PC-4","PC-P","PC-LP","PC-MR","PC-CR","PC-O","PC-C","PC-OL","PC-G","PC-DG","PC-LG","PC-AG","PC-EM","PC-BG","PC-TQ","PC-LB","PC-B","PC-DB","PC-MB","PC-V","PC-MV","PC-LV","PC-BR","PC-IB","PC-BG2","PC-RB","PC-CB","PC-WA","PC-CG","PC-FY","PC-FO","PC-FR","PC-FP","PC-FL","PC-FB","PC-MG"],"posca-16":["PC-W","PC-K","PC-Y","PC-YL","PC-R","PC-P","PC-O","PC-G","PC-DG","PC-LG","PC-LB","PC-B","PC-DB","PC-V","PC-BR","PC-BG2"],"posca-8":["PC-W","PC-K","PC-Y","PC-R","PC-O","PC-G","PC-B","PC-BR"]}};</script>
+<script>window.__PALETTE_FALLBACK__={"_brand":"POSCA (Uni Mitsubishi) \u2014 water-based acrylic paint markers","_note":"Hex values are community-sourced approximations of the physical ink, NOT official manufacturer data. Swatch your own pens on your actual paper stock and replace these before selling anything. POSCA is a trademark of Mitsubishi Pencil Co.; this file references it descriptively only.","_count":43,"colorAliases":{"PC-W":[255,255,255],"PC-K":[20,20,20],"PC-8K":[200,200,204],"PC-8KG":[212,168,48],"PC-Y":[248,224,16],"PC-YL":[254,248,152],"PC-R":[232,32,32],"PC-4":[240,64,32],"PC-P":[240,104,152],"PC-LP":[248,208,224],"PC-MR":[208,64,96],"PC-CR":[184,32,56],"PC-O":[248,112,32],"PC-C":[192,224,32],"PC-OL":[120,136,56],"PC-G":[32,160,56],"PC-DG":[16,120,32],"PC-LG":[160,224,160],"PC-AG":[136,200,64],"PC-EM":[24,160,88],"PC-BG":[16,168,160],"PC-TQ":[16,192,200],"PC-LB":[136,200,240],"PC-B":[32,96,200],"PC-DB":[16,40,128],"PC-MB":[80,112,200],"PC-V":[120,56,192],"PC-MV":[112,80,192],"PC-LV":[192,160,224],"PC-BR":[144,96,48],"PC-IB":[248,237,208],"PC-BG2":[216,184,136],"PC-RB":[136,56,32],"PC-CB":[92,40,32],"PC-WA":[192,184,176],"PC-CG":[176,184,192],"PC-FY":[255,255,0],"PC-FO":[255,128,0],"PC-FR":[255,32,64],"PC-FP":[255,64,192],"PC-FL":[64,255,128],"PC-FB":[0,200,255],"PC-MG":[208,24,128]},"sets":{"posca-full-43":["PC-W","PC-K","PC-8K","PC-8KG","PC-Y","PC-YL","PC-R","PC-4","PC-P","PC-LP","PC-MR","PC-CR","PC-O","PC-C","PC-OL","PC-G","PC-DG","PC-LG","PC-AG","PC-EM","PC-BG","PC-TQ","PC-LB","PC-B","PC-DB","PC-MB","PC-V","PC-MV","PC-LV","PC-BR","PC-IB","PC-BG2","PC-RB","PC-CB","PC-WA","PC-CG","PC-FY","PC-FO","PC-FR","PC-FP","PC-FL","PC-FB","PC-MG"],"posca-16":["PC-W","PC-K","PC-Y","PC-YL","PC-R","PC-P","PC-O","PC-G","PC-DG","PC-LG","PC-LB","PC-B","PC-DB","PC-V","PC-BR","PC-BG2"],"posca-8":["PC-W","PC-K","PC-Y","PC-R","PC-O","PC-G","PC-B","PC-BR"]}};
+window.__PALETTE_FALLBACK_FC__={"_brand":"Faber-Castell Polychromos \u2014 oil-based artist colour pencils","_note":"Hex values are community-sourced approximations of the physical pigment, NOT official Faber-Castell data. Swatch your own pencils on your actual paper stock and replace these before selling anything. Faber-Castell and Polychromos are trademarks of Faber-Castell; this file references them descriptively only.","_count":120,"colorAliases":{"101":[255,255,255],"103":[255,244,216],"102":[255,241,182],"104":[243,239,111],"205":[235,234,100],"105":[255,231,62],"106":[255,222,69],"107":[255,213,48],"108":[255,194,32],"109":[250,166,50],"111":[247,143,38],"113":[244,128,52],"115":[244,121,51],"117":[240,85,68],"118":[232,77,71],"121":[239,70,80],"219":[232,73,94],"223":[228,47,68],"217":[188,69,79],"126":[216,44,74],"225":[166,48,85],"133":[147,78,103],"142":[205,63,92],"226":[223,45,93],"127":[232,82,116],"124":[233,92,114],"123":[239,76,134],"125":[195,64,139],"128":[240,109,152],"129":[243,137,178],"119":[215,134,185],"135":[171,104,161],"194":[136,73,109],"134":[161,77,157],"160":[154,105,173],"138":[138,107,175],"136":[115,88,160],"137":[89,82,158],"249":[97,87,161],"141":[72,79,159],"157":[62,74,91],"247":[68,94,152],"151":[23,112,184],"143":[5,106,181],"120":[80,109,180],"140":[101,154,210],"146":[134,178,223],"144":[21,109,182],"110":[11,125,194],"152":[48,156,214],"145":[67,172,225],"149":[0,119,162],"246":[18,100,149],"155":[8,126,144],"153":[0,130,162],"154":[102,203,218],"156":[1,186,189],"158":[20,107,96],"159":[11,119,100],"264":[0,147,120],"276":[0,152,127],"161":[0,176,145],"163":[12,176,116],"162":[56,187,143],"171":[160,209,133],"166":[118,194,95],"112":[73,185,92],"266":[39,138,70],"167":[76,122,79],"267":[49,92,72],"278":[74,97,75],"165":[68,105,77],"173":[91,93,68],"170":[159,187,86],"168":[130,162,85],"174":[101,113,79],"172":[115,140,112],"169":[154,93,88],"192":[145,71,74],"263":[130,78,81],"193":[170,81,100],"130":[246,152,146],"131":[246,156,153],"132":[251,194,159],"189":[228,168,147],"191":[231,124,131],"190":[220,126,118],"188":[215,114,85],"187":[216,151,99],"186":[236,142,89],"183":[252,188,95],"185":[248,210,90],"184":[245,194,91],"268":[202,148,57],"182":[196,146,93],"180":[154,115,74],"179":[124,96,76],"176":[108,89,84],"178":[146,124,107],"280":[104,85,70],"283":[137,90,71],"177":[93,79,72],"175":[71,73,72],"275":[88,85,87],"274":[98,96,96],"273":[124,126,127],"272":[168,165,159],"271":[200,193,190],"270":[217,208,206],"230":[202,209,216],"231":[190,196,204],"232":[172,177,184],"233":[142,148,152],"234":[110,113,118],"235":[87,87,88],"181":[72,78,85],"199":[5,5,5],"251":[171,173,176],"250":[205,192,141],"252":[176,144,146]},"names":{"101":"White","103":"Ivory","102":"Cream","104":"Light Yellow Glaze","205":"Cadmium Yellow Lemon","105":"Light Cadmium Yellow","106":"Light Chrome Yellow","107":"Cadmium Yellow","108":"Dark Cadmium Yellow","109":"Dark Chrome Yellow","111":"Cadmium Orange","113":"Orange Glaze","115":"Dark Cadmium Orange","117":"Light Cadmium Red","118":"Scarlet Red","121":"Pale Geranium Lake","219":"Deep Scarlet Red","223":"Deep Red","217":"Middle Cadmium Red","126":"Permanent Carmine","225":"Dark Red","133":"Magenta","142":"Madder","226":"Alizarin Crimson","127":"Pink Carmine","124":"Rose Carmine","123":"Fuchsia","125":"Middle Purple Pink","128":"Light Purple Pink","129":"Pink Madder Lake","119":"Light Magenta","135":"Light Red-Violet","194":"Red-Violet","134":"Crimson","160":"Manganese Violet","138":"Violet","136":"Purple Violet","137":"Blue Violet","249":"Mauve","141":"Delft Blue","157":"Dark Indigo","247":"Indanthrene Blue","151":"Helioblue-Reddish","143":"Cobalt Blue","120":"Ultramarine","140":"Light Ultramarine","146":"Sky Blue","144":"Cobalt Blue-Greenish","110":"Phthalo Blue","152":"Middle Phthalo Blue","145":"Light Phthalo Blue","149":"Bluish Turquoise","246":"Prussian Blue","155":"Helio Turquoise","153":"Cobalt Turquoise","154":"Light Cobalt Turquoise","156":"Cobalt Green","158":"Deep Cobalt Green","159":"Hooker's Green","264":"Dark Phthalo Green","276":"Chrome Oxide Green Fiery","161":"Phthalo Green","163":"Emerald Green","162":"Light Phthalo Green","171":"Light Green","166":"Grass Green","112":"Leaf Green","266":"Permanent Green","167":"Permanent Green Olive","267":"Pine Green","278":"Chrome Oxide Green","165":"Juniper Green","173":"Olive Green Yellowish","170":"May Green","168":"Earth Green Yellowish","174":"Chromium Green Opaque","172":"Earth Green","169":"Caput Mortuum","192":"Indian Red","263":"Caput Mortuum Violet","193":"Burnt Carmine","130":"Dark Flesh","131":"Medium Flesh","132":"Light Flesh","189":"Cinnamon","191":"Pompeian Red","190":"Venetian Red","188":"Sanguine","187":"Burnt Ochre","186":"Terracotta","183":"Light Yellow Ochre","185":"Naples Yellow","184":"Dark Naples Ochre","268":"Green Gold","182":"Brown Ochre","180":"Raw Umber","179":"Bistre","176":"Van Dyck Brown","178":"Nougat","280":"Burnt Umber","283":"Burnt Siena","177":"Walnut Brown","175":"Dark Sepia","275":"Warm Grey VI","274":"Warm Grey V","273":"Warm Grey IV","272":"Warm Grey III","271":"Warm Grey II","270":"Warm Grey I","230":"Cold Grey I","231":"Cold Grey II","232":"Cold Grey III","233":"Cold Grey IV","234":"Cold Grey V","235":"Cold Grey VI","181":"Payne's Grey","199":"Black","251":"Silver","250":"Gold","252":"Copper"},"sets":{"fc-12":["101","106","111","118","126","136","120","143","161","112","280","199"],"fc-24":["101","106","111","118","126","136","120","143","161","112","280","199","103","109","219","123","138","110","146","166","187","177","235","132"],"fc-36":["101","106","111","118","126","136","120","143","161","112","280","199","103","109","219","123","138","110","146","166","187","177","235","132","105","113","142","127","160","140","151","163","170","169","183","272"],"fc-60":["101","106","111","118","126","136","120","143","161","112","280","199","103","109","219","123","138","110","146","166","187","177","235","132","105","113","142","127","160","140","151","163","170","169","183","272","205","108","115","121","223","124","128","119","135","137","141","152","155","171","167","172","192","130","191","185","178","274","181","250"],"fc-full-120":["101","103","102","104","205","105","106","107","108","109","111","113","115","117","118","121","219","223","217","126","225","133","142","226","127","124","123","125","128","129","119","135","194","134","160","138","136","137","249","141","157","247","151","143","120","140","146","144","110","152","145","149","246","155","153","154","156","158","159","264","276","161","163","162","171","166","112","266","167","267","278","165","173","170","168","174","172","169","192","263","193","130","131","132","189","191","190","188","187","186","183","185","184","268","182","180","179","176","178","280","283","177","175","275","274","273","272","271","270","230","231","232","233","234","235","181","199","251","250","252"]}};</script>
 <script src="scripts/lib/require.js"></script>
 <script src="scripts/studio.js"></script>
 <script>
@@ -382,42 +393,94 @@ require(["colorreductionmanagement","settings","facetCreator","facetReducer",
     ready();
   });
 
-function ready(){ loadPalette(); }
+function ready(){ renderBrandTabs(); selectBrand("posca"); }
 
-/* ---------- palette ----------
-   Tries palettes/posca-43.json first so you can edit palettes without touching
-   this file. Falls back to the embedded copy below, which keeps the page working
-   from a file:// URL where fetch() is blocked by CORS. */
-function loadPalette(){
-  fetch("palettes/posca-43.json").then(function(r){
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    return r.json();
-  }).then(function(j){ PAL = j; renderSets(); })
-    .catch(function(){ PAL = window.__PALETTE_FALLBACK__; renderSets(); });
+/* ---------- brands ----------
+   Each brand is a separate palette file. Adding a brand means: drop a JSON file
+   in palettes/ shaped like the existing ones (colorAliases + sets, optional
+   names), embed a fallback copy below for file:// use, and add one entry here. */
+var BRANDS = {
+  "posca": {
+    label: "POSCA markers",
+    file: "palettes/posca-43.json",
+    fallback: function(){ return window.__PALETTE_FALLBACK__; },
+    defaultSet: "posca-16",
+    setLabels: {
+      "posca-8":       {t:"POSCA — 8 basics",    s:"Starter set. Bold, poster-like results."},
+      "posca-16":      {t:"POSCA — 16",          s:"The sweet spot for most photos."},
+      "posca-full-43": {t:"POSCA — full 43",     s:"Every colour, including fluorescents."}
+    }
+  },
+  "faber-castell": {
+    label: "Faber-Castell Polychromos",
+    file: "palettes/faber-castell-polychromos.json",
+    fallback: function(){ return window.__PALETTE_FALLBACK_FC__; },
+    defaultSet: "fc-24",
+    setLabels: {
+      "fc-12":      {t:"Polychromos — 12", s:"Compact tin. Core hues only."},
+      "fc-24":      {t:"Polychromos — 24", s:"The most common tin size."},
+      "fc-36":      {t:"Polychromos — 36", s:"Room for shading and skin tones."},
+      "fc-60":      {t:"Polychromos — 60", s:"Professional tin. Deep coverage."},
+      "fc-full-120":{t:"Polychromos — full 120", s:"Every colour in the range."}
+    }
+  }
+};
+var brandKey = null;
+var PAL_CACHE = {};
+
+function renderBrandTabs(){
+  var host = $("brandtabs"); host.innerHTML = "";
+  Object.keys(BRANDS).forEach(function(key){
+    var b = document.createElement("button");
+    b.type = "button"; b.dataset.b = key; b.setAttribute("aria-pressed", "false");
+    b.textContent = BRANDS[key].label;
+    b.addEventListener("click", function(){ selectBrand(key); });
+    host.appendChild(b);
+  });
 }
 
-var SET_LABELS = {
-  "posca-8":       {t:"POSCA — 8 basics",    s:"Starter set. Bold, poster-like results."},
-  "posca-16":      {t:"POSCA — 16",          s:"The sweet spot for most photos."},
-  "posca-full-43": {t:"POSCA — full 43",     s:"Every colour, including fluorescents."}
-};
+function selectBrand(key){
+  brandKey = key;
+  [].forEach.call(document.querySelectorAll("#brandtabs button"), function(b){
+    b.setAttribute("aria-pressed", b.dataset.b===key ? "true":"false");
+  });
+  loadPalette(key);
+}
+
+/* ---------- palette ----------
+   Tries the brand's JSON file first so you can edit palettes without touching
+   this file. Falls back to the embedded copy, which keeps the page working
+   from a file:// URL where fetch() is blocked by CORS. Cached per brand so
+   switching back and forth doesn't re-fetch. */
+function loadPalette(key){
+  if(PAL_CACHE[key]){ PAL = PAL_CACHE[key]; renderSets(); return; }
+  var brand = BRANDS[key];
+  fetch(brand.file).then(function(r){
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return r.json();
+  }).then(function(j){ PAL_CACHE[key] = j; if(brandKey===key){ PAL = j; renderSets(); } })
+    .catch(function(){ var j = brand.fallback(); PAL_CACHE[key] = j; if(brandKey===key){ PAL = j; renderSets(); } });
+}
 
 function renderSets(){
   var host = $("sets"); host.innerHTML = "";
+  var labels = BRANDS[brandKey].setLabels;
   Object.keys(PAL.sets).forEach(function(key){
     var codes = PAL.sets[key];
-    var meta = SET_LABELS[key] || {t:key, s:codes.length+" colours"};
+    var meta = labels[key] || {t:key, s:codes.length+" colours"};
     var b = document.createElement("button");
     b.type="button"; b.className="set"; b.setAttribute("aria-pressed","false"); b.dataset.k=key;
     var sw = codes.map(function(c){
       var v = PAL.colorAliases[c];
-      return '<i style="background:rgb('+v[0]+','+v[1]+','+v[2]+')" title="'+c+'"></i>';
+      var label = (PAL.names && PAL.names[c]) ? (c+" "+PAL.names[c]) : c;
+      return '<i style="background:rgb('+v[0]+','+v[1]+','+v[2]+')" title="'+label+'"></i>';
     }).join("");
     b.innerHTML = "<b>"+meta.t+"</b><span>"+codes.length+" colours · "+meta.s+"</span><div class='sw'>"+sw+"</div>";
     b.addEventListener("click", function(){ selectSet(key); });
     host.appendChild(b);
   });
-  selectSet("posca-16");
+  var def = BRANDS[brandKey].defaultSet;
+  selectSet(PAL.sets[def] ? def : Object.keys(PAL.sets)[0]);
 }
 
 function selectSet(key){
@@ -658,16 +721,22 @@ function render(legend, svgT, svgP){
   legend.rows.forEach(function(r){
     var lum = (0.2126*r.rgb[0]+0.7152*r.rgb[1]+0.0722*r.rgb[2])/255;
     var el = document.createElement("div"); el.className="lgi";
+    var code = r.marker||r.hex;
+    var name = (r.marker && PAL.names && PAL.names[r.marker]) ? PAL.names[r.marker] : null;
+    var label = name ? (code+" — "+name) : code;
     el.innerHTML = '<span class="n" style="background:'+r.hex+';color:'+(lum>0.55?"#111":"#fff")+'">'+r.number+'</span>'+
-                   '<span class="t"><b>'+(r.marker||r.hex)+'</b><span>'+r.pct+'% · '+r.regions+' region'+(r.regions>1?"s":"")+'</span></span>';
+                   '<span class="t"><b>'+label+'</b><span>'+r.pct+'% · '+r.regions+' region'+(r.regions>1?"s":"")+'</span></span>';
     lg.appendChild(el);
   });
 
   var u = $("unused");
   if(legend.unused.length){
     u.hidden=false;
-    u.innerHTML = "<b>You won't need:</b> <span>"+legend.unused.join(", ")+
-      " — this photo has no colours close to them. Leave those pens in the box.</span>";
+    var names = legend.unused.map(function(n){
+      return (PAL.names && PAL.names[n]) ? (n+" "+PAL.names[n]) : n;
+    });
+    u.innerHTML = "<b>You won't need:</b> <span>"+names.join(", ")+
+      " — this photo has no colours close to them. Leave those out.</span>";
   } else { u.hidden = true; }
 }
 
