@@ -10,39 +10,59 @@ instead of a mixed paint pot.
 
 ---
 
-## Marker Studio — the new UI
+## Marker Studio — the default UI
 
-`studio.html` is a rebuilt front end aimed at the actual job: *turn my photo into
-something I can paint with the markers in my drawer.*
+`index.html` is the default page — a rebuilt front end aimed at the actual job:
+*turn my photo into something I can paint or shade with what's already in my drawer.*
+The original Materialize UI still exists, unchanged, at `classic.html`; each page
+links to the other.
 
 1. Drop a photo (or paste it)
-2. Pick the marker set you own — shown as real swatches
+2. Pick what you're colouring with — a brand tab (**POSCA markers** /
+   **Faber-Castell Polychromos**), then the specific set you own, shown as real
+   swatches
 3. Choose a detail level: Simple / Balanced / Detailed / Maximum
 4. Generate, then download the template SVG, a PNG, and the legend as CSV
 
 It shows the numbered template and the colour preview side by side, lists every
-marker with its number, share of the area and region count, and tells you which pens
-in your set this photo **doesn't** need.
+colour with its code (and pencil name, where the palette has one), share of the
+area and region count, and tells you which ones in your set this photo
+**doesn't** need.
 
 Everything runs in the browser. No uploads, no server, no API keys. Vanilla JS and
-CSS custom properties — no jQuery, no Materialize, no bundler, light and dark themes.
-All the raw algorithm parameters are still there under **Advanced settings**.
-
-The original Materialize UI is untouched at `index.html`.
+CSS custom properties — no jQuery, no Materialize, no bundler. Auto / Light / Dark
+theme toggle in the header, persisted in `localStorage`, applied before first paint
+so there's no flash of the wrong theme on reload. All the raw algorithm parameters
+are still there under **Advanced settings**.
 
 **Verified working end to end**, live from GitHub (via htmlpreview), in an actual
-browser: uploaded a 400×400 test portrait, generated against `posca-16`, and got
-10 colours / 19 regions with a correct marker legend — matching the Node/CLI result
-exactly. Template, preview, legend, the "you won't need" callout and the SVG
-download all fired with no console errors.
+browser, for both brands:
+- POSCA `posca-16`: 10 colours / 19 regions, matching the Node/CLI result exactly.
+  Template, preview, legend, the "you won't need" callout and the SVG download all
+  fired with no console errors.
+- Faber-Castell `fc-24`: 14 colours / 20 regions, legend correctly showing pencil
+  names ("187 — Burnt Ochre"), brand switch preserved the active theme.
+
+**Performance note:** generation against the larger pencil sets (`fc-60`,
+`fc-full-120`) is noticeably slower than POSCA — roughly 15-20s vs under a second
+on the 400×400 test image, because empty-cluster reseeding does a perceptual
+(CIEDE2000) nearest-match search per candidate against a much larger restricted
+palette. It completes correctly, just don't mistake the wait for a hang.
 
 ```bash
 npx tsc -p tsconfig.studio.json    # builds scripts/studio.js
-npm start                          # serve, then open /studio.html
+npm start                          # serve, then open /index.html
 ```
 
 `scripts/studio.js` is the same algorithm bundle as `scripts/main.js` minus the old
 GUI files, so the new page carries no jQuery or Materialize dependency.
+
+### Adding another brand
+
+Each brand is one palette JSON (`colorAliases`, `sets`, optional `names`) plus one
+entry in the `BRANDS` object near the top of `index.html`'s script — palette file
+path, an embedded fallback (for `file://` use where `fetch` is blocked by CORS),
+a default set, and per-set display labels. No other code changes needed.
 
 ---
 
@@ -93,14 +113,21 @@ reference dataset — matches to four decimal places. Plus
 ΔE76 over-weights blue separation and under-weights near-neutral warm tones, which is
 exactly where skin lives. That is why faces get the wrong marker upstream.
 
-### 3. Marker palettes — `palettes/`
+### 3. Marker and pencil palettes — `palettes/`
 
 `posca-43.json` — all 43 POSCA colours, with `posca-8`, `posca-16` and `posca-full-43`
 subsets ready to use as `kMeansColorRestrictions`.
 
-> Hex values are community-sourced **approximations of the physical ink**, not official
-> manufacturer data. Swatch your own pens on your actual paper stock before relying on
-> them. POSCA is a trademark of Mitsubishi Pencil Co., referenced descriptively only.
+`faber-castell-polychromos.json` — all 120 Polychromos colour pencils, with curated
+`fc-12` / `fc-24` / `fc-36` / `fc-60` tin-size subsets plus `fc-full-120`, each entry
+carrying a `names` map so the legend can show "187 — Burnt Ochre" instead of just
+the pencil number.
+
+> Hex values for both files are community-sourced **approximations of the physical
+> ink/pigment**, not official manufacturer data. Swatch your own pens or pencils on
+> your actual paper stock before relying on them. POSCA is a trademark of Mitsubishi
+> Pencil Co.; Faber-Castell and Polychromos are trademarks of Faber-Castell — both
+> referenced descriptively only.
 
 ### 4. `tools/generate.js` — pipeline runner without the native dep
 
@@ -190,6 +217,7 @@ Neither is implemented yet. It is the next thing to build.
 - [ ] bleed gutter between facets (alcohol markers bleed past the line)
 - [ ] minimum facet size in **millimetres** derived from nib width + print size, not pixels
 - [ ] A5–A2 print-ready PDF output at 300dpi
+- [x] Faber-Castell Polychromos palette (12/24/36/60/120) with a brand tab in the UI
 - [ ] more palettes: Ohuhu Acrylic, Molotow, Arrtx Acrylic, Copic
 - [ ] browser Web Worker build (zero server compute)
 
