@@ -10,6 +10,36 @@ instead of a mixed paint pot.
 
 ---
 
+## Marker Studio — the new UI
+
+`studio.html` is a rebuilt front end aimed at the actual job: *turn my photo into
+something I can paint with the markers in my drawer.*
+
+1. Drop a photo (or paste it)
+2. Pick the marker set you own — shown as real swatches
+3. Choose a detail level: Simple / Balanced / Detailed / Maximum
+4. Generate, then download the template SVG, a PNG, and the legend as CSV
+
+It shows the numbered template and the colour preview side by side, lists every
+marker with its number, share of the area and region count, and tells you which pens
+in your set this photo **doesn't** need.
+
+Everything runs in the browser. No uploads, no server, no API keys. Vanilla JS and
+CSS custom properties — no jQuery, no Materialize, no bundler, light and dark themes.
+All the raw algorithm parameters are still there under **Advanced settings**.
+
+The original Materialize UI is untouched at `index.html`.
+
+```bash
+npx tsc -p tsconfig.studio.json    # builds scripts/studio.js
+npm start                          # serve, then open /studio.html
+```
+
+`scripts/studio.js` is the same algorithm bundle as `scripts/main.js` minus the old
+GUI files, so the new page carries no jQuery or Materialize dependency.
+
+---
+
 ## What's different
 
 Four source edits, ~90 lines. Everything else is upstream, untouched.
